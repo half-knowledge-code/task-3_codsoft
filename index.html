@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Calculator — Level 1 Task 3</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ✅ UPDATED COLORS */
+:root {
+  --bg: #000000;
+  --surface: #111111;
+  --card: #1a1a1a;
+
+  --accent: #ffffff;
+  --accent2: #cccccc;
+  --accent3: #888888;
+
+  --text: #ffffff;
+  --muted: #777777;
+
+  --btn-bg: #1a1a1a;
+  --btn-hover: #2a2a2a;
+
+  --operator: #ffffff;
+  --equal: linear-gradient(135deg, #ffffff, #aaaaaa);
+
+  --clear: #ff4d4d;
+
+  --display-bg: #0a0a0a;
+  --glow: rgba(255,255,255,0.08);
+}
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  overflow: hidden;
+}
+
+/* blobs */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+  animation: drift 8s ease-in-out infinite alternate;
+}
+
+.blob1 { width: 400px; height: 400px; background: #00e5ff; top: -100px; left: -100px; }
+.blob2 { width: 300px; height: 300px; background: #ff7a18; bottom: -80px; right: -80px; }
+.blob3 { width: 250px; height: 250px; background: #00ff9f; bottom: 20%; left: 10%; }
+
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(30px, 20px) scale(1.08); }
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+h1 {
+  font-size: 38px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--text), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.calc {
+  background: var(--card);
+  border-radius: 28px;
+  padding: 24px;
+  width: 340px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 60px var(--glow);
+}
+
+/* display */
+.display {
+  background: var(--display-bg);
+  border-radius: 18px;
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.expression {
+  font-family: 'Space Mono';
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.result {
+  font-family: 'Space Mono';
+  font-size: 38px;
+  color: var(--text);
+}
+
+/* grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+button {
+  height: 68px;
+  border: none;
+  border-radius: 16px;
+  font-family: 'Space Mono';
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* numbers */
+.btn-num {
+  background: var(--btn-bg);
+  color: var(--text);
+}
+.btn-num:hover {
+  background: var(--btn-hover);
+}
+
+/* operators */
+.btn-op {
+  background: rgba(0,229,255,0.15);
+  color: var(--accent);
+}
+.btn-op:hover {
+  background: rgba(0,229,255,0.2);
+  box-shadow: 0 0 20px rgba(0,229,255,0.5);
+}
+
+/* clear */
+.btn-clear {
+  background: rgba(255,77,77,0.1);
+  color: var(--clear);
+}
+
+/* equal */
+.btn-eq {
+  background: linear-gradient(135deg, #00e5ff, #ff7a18);
+  color: white;
+  box-shadow: 0 8px 30px rgba(0,229,255,0.5);
+}
+
+.span2 { grid-column: span 2; }
+
+</style>
+</head>
+
+<body>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div class="wrapper">
+  <h1>Calculator</h1>
+
+  <div class="calc">
+    <div class="display">
+      <div class="expression" id="expression"></div>
+      <div class="result" id="result">0</div>
+    </div>
+
+    <div class="grid">
+      <button class="btn-clear" onclick="clearAll()">AC</button>
+      <button class="btn-clear" onclick="toggleSign()">+/−</button>
+      <button class="btn-clear" onclick="percent()">%</button>
+      <button class="btn-op" onclick="inputOp('/')">÷</button>
+
+      <button class="btn-num" onclick="inputNum('7')">7</button>
+      <button class="btn-num" onclick="inputNum('8')">8</button>
+      <button class="btn-num" onclick="inputNum('9')">9</button>
+      <button class="btn-op" onclick="inputOp('*')">×</button>
+
+      <button class="btn-num" onclick="inputNum('4')">4</button>
+      <button class="btn-num" onclick="inputNum('5')">5</button>
+      <button class="btn-num" onclick="inputNum('6')">6</button>
+      <button class="btn-op" onclick="inputOp('-')">−</button>
+
+      <button class="btn-num" onclick="inputNum('1')">1</button>
+      <button class="btn-num" onclick="inputNum('2')">2</button>
+      <button class="btn-num" onclick="inputNum('3')">3</button>
+      <button class="btn-op" onclick="inputOp('+')">+</button>
+
+      <button class="btn-num span2" onclick="inputNum('0')">0</button>
+      <button class="btn-num" onclick="inputDot()">.</button>
+      <button class="btn-eq" onclick="calculate()">=</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let current = '0';
+let expression = '';
+
+const resEl = document.getElementById('result');
+const expEl = document.getElementById('expression');
+
+function updateDisplay() {
+  resEl.textContent = current;
+  expEl.textContent = expression;
+}
+
+function inputNum(n) {
+  current = current === '0' ? n : current + n;
+  updateDisplay();
+}
+
+function inputDot() {
+  if (!current.includes('.')) current += '.';
+  updateDisplay();
+}
+
+function inputOp(op) {
+  expression = current + ' ' + op + ' ';
+  window._op = op;
+  window._prev = parseFloat(current);
+  current = '0';
+  updateDisplay();
+}
+
+function calculate() {
+  let prev = window._prev;
+  let cur = parseFloat(current);
+  let res;
+
+  if (window._op === '+') res = prev + cur;
+  if (window._op === '-') res = prev - cur;
+  if (window._op === '*') res = prev * cur;
+  if (window._op === '/') res = cur === 0 ? 'Error' : prev / cur;
+
+  current = res.toString();
+  expression = '';
+  updateDisplay();
+}
+
+function clearAll() {
+  current = '0';
+  expression = '';
+  updateDisplay();
+}
+
+function toggleSign() {
+  current = (parseFloat(current) * -1).toString();
+  updateDisplay();
+}
+
+function percent() {
+  current = (parseFloat(current) / 100).toString();
+  updateDisplay();
+}
+</script>
+
+</body>
+</html>
